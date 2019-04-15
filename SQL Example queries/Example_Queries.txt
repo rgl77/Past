@@ -1,0 +1,235 @@
+Assuming we're in the classic model database.
+/By saying 'use classicmodels;' will let us enter the database/
+
+1. select productline from productlines;
++------------------+
+ | productline |
+ +------------------+
+| Classic Cars
+| Motorcycles | Planes
+| Ships
+| Trains
+|
+| |
+|
+|
+| Trucks and Buses |
+| Vintage Cars | +------------------+
+7 rows in set (0.00 sec)
+
+2. select employees.employeenumber,employees.lastname, employees.firstname, employees.extension from employees inner join offices on employees.officeCode=offices.officeCode where offices.city = 'San Francisco';
++----------------+-----------+-----------+-----------+
+| employeenumber | lastname | firstname | extension | +----------------+-----------+-----------+-----------+
+| 1002 | Murphy | Diane | x5800
+| 1056 | Patterson | Mary | x4611
+| 1076 | Firrelli | Jeff | x9273 |
+| 1143 | Bow | Anthony
+| 1165 | Jennings | Leslie
+| 1166 | Thompson | Leslie +----------------+-----------+-----------+-----------+ 6 rows in set (0.00 sec)
+| |
+| |
+|
+| x5428 | x3291
+| x4065
+
+ 3. select ProductCode,ProductName, ProductVendor,QuantityInStock from products where productline = 'Vintage Cars' and quantityinstock > 1000 and quantityinstock <5000;
++-------------+-------------------------------------------+---------------------------+-----------------+
+| ProductCode | ProductName | ProductVendor | QuantityInStock | +-------------+-------------------------------------------+---------------------------+-----------------+
+| S18_1749 |
+| S18_2949 4189 |
+| S18_3140 | S18_3856 | S24_2022 2847 |
+| 1917 Grand Touring Sedan
+| 1913 Ford Model T Speedster
+| Welly Diecast Productions | 2724 | Carousel DieCast Legends |
+| 1903 Ford Model A
+| 1941 Chevrolet Special Deluxe Cabriolet | Exoto Designs
+| 1938 Cadillac V-16 Presidential Limousine | Classic Metal Creations
+3913 |
+2378 |
+|
+| S24_3420
+| S24_3969 |
+| S24_4258 +-------------+-------------------------------------------+---------------------------+-----------------+ 8 rows in set (0.00 sec)
+| 1937 Horch 930V Limousine | Autoart Studio Design | 1936 Mercedes Benz 500k Roadster | Red Start Diecast
+|
+2902 | 2081
+| 1936 Chrysler Airflow | Second Gear Diecast |
+4710 |
+
+4. select productCode, ProductName, ProductVendor, buyprice,msrp from products where msrp = (select min(msrp) from products);
++-------------+-----------------------------+-------------------------+----------+-------+
+| productCode | ProductName | ProductVendor | buyprice | msrp | +-------------+-----------------------------+-------------------------+----------+-------+
+| S24_1937 | 1939 Chevrolet Deluxe Coupe | Motor City Art Classics | 22.57 | 33.19 | +-------------+-----------------------------+-------------------------+----------+-------+
+1 row in set (0.00 sec)
+5. select productname, (msrp-buyprice) as profit from products where (msrp-buyprice)= (select max(msrp-buyprice) from products);
++--------------------------+--------+
+| productname | profit | +--------------------------+--------+
+| 1952 Alpine Renault 1300 | 115.72 | +--------------------------+--------+
+1 row in set (0.01 sec)
+| Unimax Art Galleries |
+|
+|
+
+ 6. select country, count(country) as customer from customers group by country having count(country) >= 4 and count(country) <= 12 order by count(country) desc;
++-------------+----------+
+| country | customer | +-------------+----------+
+| France
+| Spain
+| Australia
+|UK | 5|
+| Italy | 4 |
+| New Zealand | +-------------+----------+
+6 rows in set (0.00 sec)
+
+7. select products.productcode,products.productname, sum(orderdetails.quantityOrdered) as ordercount from orderdetails inner join products on orderdetails.productcode = products.productcode group by products.productCode order by ordercount desc limit 1;
++-------------+-----------------------------+------------+
+| productcode | productname | ordercount | +-------------+-----------------------------+------------+
+| S18_3232 | 1992 Ferrari 360 Spider red | 1808 | +-------------+-----------------------------+------------+
+1 row in set (0.00 sec)
+
+8. select employeenumber, concat(firstname, ' ' ,lastname) as name from employees where reportsto = 1002 or reportsto = 1102;
+| |
+|
+12 | 7 |
++----------------+------------------+ | employeenumber | name +----------------+------------------+
+| 1056 | Mary Patterson
+| 1076 | Jeff Firrelli |
+| |
+| 1337 | Loui Bondur
+| 1370 | Gerard Hernandez |
+| 1401 | Pamela Castillo |
+| 1501 | Larry Bott
+| 1504 | Barry Jones
+| 1702 | Martin Gerard +----------------+------------------+ 8 rows in set (0.00 sec)
+5 |
+4 |
+|
+|
+|
+|
+
+ 9. select employeenumber,lastname,firstname from employees where reportsto is null;
++----------------+----------+-----------+
+| employeenumber | lastname | firstname | +----------------+----------+-----------+
+| 1002 | Murphy | Diane | +----------------+----------+-----------+
+1 row in set (0.00 sec)
+
+10. SELECT productName as '1930s Vintage Cars products' FROM products WHERE productLine="Vintage Cars" and SUBSTRING(productName,1,4) BETWEEN 1930 AND 1939;
++-------------------------------------------+
+| 1930s Vintage Cars products | +-------------------------------------------+
+| 1937 Lincoln Berline |
+| 1936 Mercedes-Benz 500K Special Roadster | | 1932 Model A Ford J-Coupe |
+| 1934 Ford V8 Coupe |
+| 1932 Alfa Romeo 8C2300 Spider Sport
+| 1939 Cadillac Limousine |
+| 1939 Chevrolet Deluxe Coupe
+| 1938 Cadillac V-16 Presidential Limousine |
+| 1937 Horch 930V Limousine
+| 1936 Mercedes Benz 500k Roadster | 1936 Chrysler Airflow |
+| 1930 Buick Marquette Phaeton +-------------------------------------------+ 12 rows in set (0.00 sec)
+|
+|
+|
+| |
+
+11. select month(orderdate) as month , count(orderDate) as count from orders group by month(orderDate) order by count desc limit 1;
++-------+-------+
+| month | count | +-------+-------+
+| 11| 63| +-------+-------+
+1 row in set (0.00 sec)
+
+ 12. SELECT employees.firstname, employees.lastname FROM employees WHERE employees.employeeNumber NOT IN (SELECT DISTINCT(employees.employeeNumber) FROM employees, customers WHERE employees.employeeNumber = customers.salesRepEmployeeNumber) AND jobTitle = 'Sales Rep';
++-----------+----------+
+| firstname | lastname | +-----------+----------+
+| Tom | King |
+| Yoshimi | Kato +-----------+----------+
+2 rows in set (0.00 sec)
+
+13. select customername from customers left join orders on customers.customernumber = orders.customernumber where orders.customernumber is null and customers.country != 'Germany';
++----------------------------+ | customername +----------------------------+ | Havel & Zbyszek Co
+|
+| |
+|
+| ANG Resellers
+| BG&E Collectables
+| Schuyler Imports
+| Asian Treasures, Inc.
+| SAR Distributors, Co
+| Lisboa Souveniers, Inc
+| Precious Collectables
+| Anton Designs, Ltd.
+| Kremlin Collectables, Co. | | Raanan Stores, Inc | +----------------------------+
+14 rows in set (0.01 sec)
+| American Souvenirs Inc
+| Porto Imports Co.
+| Asian Shopping Network, Co |
+|
+|
+|
+|
+|
+| |
+| |
+
+ 14. select customername, sum(od.quantityordered) from customers as c left join orders on c.customernumber = orders.customernumber left join orderdetails od on orders.ordernumber = od.ordernumber group by c.customernumber having sum(od.quantityordered) < 400;
++--------------------------------+-------------------------+
+| customername | sum(od.quantityordered) | +--------------------------------+-------------------------+
+| Atelier graphique |
+| Cambridge Collectables Co. |
+| Auto-Moto Classics Inc. |
+| Boards & Toys Co. |
+| Royale Belge |
+| Microscale Inc. |
+| Frau da Collezione |
+| Double Decker Gift Stores, Ltd | +--------------------------------+-------------------------+ 8 rows in set (0.01 sec)
+
+15. create table topcustomers(customernumber int(11) not null , contactDate date not null,
+orderTotal decimal(9,2) not null,
+constraint TopCustomer_PK primary key (customernumber));
+Query OK, 0 rows affected (0.17 sec)
+
+16. insert into topcustomers (customernumber,contactDate,ordertotal) select c.customernumber, '2019-03-02' , sum(orderdetails.priceeach * orderdetails.quantityordered) from customers as c left join orders on c.customernumber = orders.customernumber left join orderdetails on orders.ordernumber = orderdetails.ordernumber group by c.customernumber having sum(orderdetails.priceeach * orderdetails.quantityordered) > 140000;
+Query OK, 10 rows affected (0.06 sec) Records: 10 Duplicates: 0 Warnings: 0
+270 |
+357 |
+287 | 102 |
+272 | 357 |
+278 | 381 |
+
+ 17. select * from topcustomers order by ordertotal desc;
++----------------+-------------+------------+
+| customernumber | contactDate | orderTotal | +----------------+-------------+------------+
+| 141 | 2019-03-02 | 820689.54 |
+| 124 | 2019-03-02 | 591827.34 |
+| 114 | 2019-03-02 | 180585.07 |
+| 151 | 2019-03-02 | 177913.95 |
+| 119 | 2019-03-02 | 158573.12 |
+| 148 | 2019-03-02 | 156251.03 |
+| 323 | 2019-03-02 | 154622.08 |
+| 131 | 2019-03-02 | 149085.15 |
+| 187 | 2019-03-02 | 148410.09 |
+| 450 | 2019-03-02 | 143536.27 | +----------------+-------------+------------+
+10 rows in set (0.00 sec)
+
+18. alter table topcustomers add column orderCount int(11) AFTER orderTotal; Query OK, 0 rows affected (0.17 sec)
+Records: 0 Duplicates: 0 Warnings: 0
+
+19. update topcustomers set ordercount = floor(1+rand()*10); Query OK, 10 rows affected (0.01 sec)
+Rows matched: 10 Changed: 10 Warnings: 0
+
+20. select * from topcustomers order by ordercount desc; +----------------+-------------+------------+------------+
+| customernumber | contactDate | orderTotal | orderCount | +----------------+-------------+------------+------------+
+| 148 | 2019-03-02 | 156251.03 |
+| 187 | 2019-03-02 | 148410.09 |
+| 450 | 2019-03-02 | 143536.27 |
+| 131 | 2019-03-02 | 149085.15 |
+| 141 | 2019-03-02 | 820689.54 |
+| 119 | 2019-03-02 | 158573.12 |
+| 124 | 2019-03-02 | 591827.34 |
+| 151 | 2019-03-02 | 177913.95 |
+| 323 | 2019-03-02 | 154622.08 |
+| 114 | 2019-03-02 | 180585.07 | +----------------+-------------+------------+------------+ 10 rows in set (0.00 sec)
+10 | 9| 8| 6| 6| 5| 5| 4| 3| 1|
+
+21. drop table topcustomers;
+Query OK, 0 rows affected (0.10 sec)
