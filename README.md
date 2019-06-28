@@ -1,5 +1,5 @@
 # Past
-Past project for classes.
+Past projects for classes.
 
-VC - demo day <br />
-Pacman multiagent project using provided skeleton code
+VC demo day <br />
+Pacman multiagent 
